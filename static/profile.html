@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>个人信息</title>
+    <link rel="stylesheet" href="css/spectre.min.css">
+    <link rel="stylesheet" href="css/spectre-icons.min.css">
+    <link rel="stylesheet" href="css/addons.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/toastify.min.css">
+    <script src="/js/toastify.min.js" charset="utf-8" defer></script>
+    <style>
+        .header {
+            user-select: none;
+        }
+        
+        .header>.name {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            color: #fff;
+            margin-left: 60px;
+            flex: 1
+        }
+        
+        #content {
+            background-color: rgba(35, 35, 35, 0.5);
+        }
+        
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            color: #fefefe;
+        }
+        
+        .center>* {
+            padding-bottom: -20px;
+        }
+        
+        .btn-addons {
+            border-radius: 8px;
+            width: auto;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 1.2em;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            --webkit-backdrop-filter: blur(10px);
+        }
+        
+        .loading {
+            pointer-events: none;
+            filter: grayscale(35%);
+        }
+        
+        .w1 {
+            height: 40%;
+            font-size: 1.5em;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+        }
+        
+        #whoisavatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 10px;
+        }
+        
+        .w1>div:hover {
+            filter: brightness(0.5);
+            cursor: pointer;
+        }
+        
+        .a1 {
+            height: 60%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .w1>div {
+            display: flex;
+            align-items: center;
+            background-color: rgba(35, 35, 35, 0.8);
+            padding: 5px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <main>
+        <div id="content">
+            <div class="header">
+                <div class="name">
+                    <div>个人信息</div>
+                </div>
+                <div class="Hmenu">
+                    <a class="btn input-group-btn btn-lg akaSb" href="/"><i class="icon icon-back"></i> </a>
+                </div>
+            </div>
+            <div class="center">
+                <div class="a1"><img id="whoisavatar" class="avatar" alt="avatar" src="/images/9b4815d6-bc7d-4bf9-aba3-18975efc89d1.avif"></div>
+                <div class="w1">
+                    <div id="changeName"><i class="icon icon-people"></i>&nbsp;<span id="UserName">Null</span>
+                        <!-- <button class="btn input-group-btn btn-lg akaSb btn-addons" id="changeName"><i class="icon icon-edit"></i></button> --></div>
+                    <div id="changeRoom"><i class="icon icon-location"></i>&nbsp;<span id="lastRoom">Null</span>
+                        <!-- <button class="btn input-group-btn btn-lg akaSb btn-addons" id="changeRoom"> <i class="icon icon-edit"></i></button> --></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const whoisavatar = document.getElementById("whoisavatar");
+            const whoisname = document.getElementById("whoisname");
+            const avatar = localStorage.getItem("avatar");
+            const backgroundUrl = localStorage.getItem("background");
+            const TripCode = document.getElementById("TripCode");
+            const username = localStorage.getItem("username");
+            const lastRoom = localStorage.getItem("lastRoom");
+            const lastRoomHoloder = document.getElementById("lastRoom");
+            const UserName = document.getElementById("UserName");
+            const changeAvatar = document.getElementById("changeAvatar");
+            const changeName = document.getElementById("changeName");
+            const changeRoom = document.getElementById("changeRoom");
+
+
+            if (lastRoom) {
+                lastRoomHoloder.innerText = lastRoom;
+            }
+            const tripcode = username.split("#");
+
+            if (navigator.userAgent.includes("iPhone") && !navigator.userAgent.includes("MicroMessenger")) {
+                document.body.style.height = "89vh";
+            }
+            if (username) {
+                UserName.innerText = tripcode[0];
+            } else {
+                showToast("请先登录");
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 1500);
+            }
+
+
+
+            changeRoom.addEventListener("click", () => {
+                const newRoom = prompt("请输入你想去的房间（默认大厅）");
+                if (newRoom) {
+                    localStorage.setItem("lastRoom", newRoom);
+                    showToast("已更新，点击右上角放回即可前往 " + newRoom);
+                } else {
+                    localStorage.setItem("lastRoom", 'main');
+                    showToast("没有输入内容，已设置为大厅");
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+
+            })
+
+            changeName.addEventListener("click", () => {
+                const newName = prompt("请输入新的显示名称");
+                if (newName) {
+                    if (newName.length > 10) {
+                        showToast("名称过长，最多10个字符");
+                        return;
+                    }
+                    localStorage.setItem("username", newName + "#" + tripcode[1]);
+                    showToast("显示名称更新成功");
+                } else {
+                    showToast("没有内容，未更改名称");
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            });
+
+            if (whoisavatar) {
+                whoisavatar.addEventListener("click", () => {
+                    const fileInput = createFileInput("image/*");
+                    fileInput.onchange = () => handleFileUpload(fileInput.files[0], (url) => {
+                        localStorage.setItem("avatar", url);
+                        showToast("头像更新成功");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    });
+                });
+            }
+
+
+            if (backgroundUrl) {
+                document.body.style.backgroundImage = `url(${backgroundUrl})`;
+            }
+
+            if (avatar) {
+                whoisavatar.src = avatar;
+            }
+
+
+
+            const handleFileUpload = (file, callback) => {
+                toggleLoading(content);
+                const formData = new FormData();
+                formData.append("file", file);
+                fetch("https://up1oad.eeuu.cc/", {
+                    method: "POST",
+                    body: formData
+                }).then(response => response.json()).then(data => {
+                    if (data.url) {
+                        callback(data.url);
+                    } else {
+                        showToast("上传失败");
+                    }
+                });
+            };
+            const createFileInput = accept => {
+                const fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = accept;
+                fileInput.click();
+                return fileInput;
+            };
+
+            function showToast(message) {
+                Toastify({
+                    text: message,
+                    duration: 1500,
+                    gravity: "top",
+                    position: "center",
+                    className: "toast_loaded",
+                    stopOnFocus: true,
+                    backgroundColor: "#fefefe50"
+                }).showToast();
+            }
+            const changeFavicon = (src) => {
+                let link = document.querySelector("link[rel='shortcut icon']") || document.createElement('link');
+                link.rel = 'shortcut icon';
+                link.type = 'image/x-icon';
+                link.href = src;
+                document.head.appendChild(link);
+            };
+
+            document.addEventListener("visibilitychange", () => {
+                const hiddenFavicon = '//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f4a4.svg';
+                const visibleFavicon = '//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f5ef.svg';
+                changeFavicon(document.visibilityState === 'hidden' ? hiddenFavicon : visibleFavicon);
+            });
+
+            changeFavicon('//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f4ad.svg');
+
+            function toggleLoading(el) {
+                el.classList.toggle('loading');
+            }
+
+        });
+    </script>
+</body>
+
+</html>

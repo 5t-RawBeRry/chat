@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>菜单</title>
+    <link rel="stylesheet" href="css/spectre.min.css">
+    <link rel="stylesheet" href="css/spectre-icons.min.css">
+    <link rel="stylesheet" href="css/addons.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/toastify.min.css">
+    <script src="/js/toastify.min.js" charset="utf-8" defer></script>
+    <style>
+        .header {
+            user-select: none;
+        }
+        
+        .header>.name {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            color: #fff;
+            margin-left: 40px;
+            flex: 1
+        }
+        
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .btn-addons {
+            border-radius: 8px;
+            width: auto;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 1.2em;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            --webkit-backdrop-filter: blur(10px);
+        }
+        
+        .loading {
+            pointer-events: none;
+            filter: grayscale(35%);
+        }
+        
+        #whoisavatarDiv {
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+    <main>
+        <div id="content">
+            <div class="header">
+
+                <div class="avatar" id="whoisavatarDiv">
+                    <img id="whoisavatar" src="/images/9b4815d6-bc7d-4bf9-aba3-18975efc89d1.avif" alt="avatar">
+                </div>
+                <div class="name">
+                    <div>欢迎回来 <span id="whoisname"> Loading ... </span></div>
+                </div>
+                <div class="Hmenu">
+                    <a class="btn input-group-btn btn-lg akaSb" href="/"><i class="icon icon-back"></i> </a>
+                </div>
+            </div>
+            <div class="center">
+                <button class="btn input-group-btn btn-lg akaSb btn-addons" id="background"><i class="icon icon-edit"></i> 更改本地背景</button>
+                <button class="btn input-group-btn btn-lg akaSb btn-addons" id="dbackground"><i class="icon icon-edit"></i> 还原默认背景</button>
+                <button class="btn input-group-btn btn-lg akaSb btn-addons" id="logout"><i class="icon icon-shutdown"></i> 退出登录</button>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const whoisavatar = document.getElementById("whoisavatar");
+            const whoisavatarDiv = document.getElementById("whoisavatarDiv");
+            const whoisname = document.getElementById("whoisname");
+            const name = localStorage.getItem("username");
+            const avatar = localStorage.getItem("avatar");
+            const backgroundUrl = localStorage.getItem("background");
+            const background = document.getElementById("background");
+            const dbackground = document.getElementById("dbackground");
+            const content = document.getElementById("content");
+            const showTripcode = document.getElementById("showTripcode");
+            let nameArr;
+
+            if (name) {
+                nameArr = name.split("#");
+                if (nameArr.length > 1) {
+                    whoisname.textContent = nameArr[0];
+                } else {
+                    whoisname.textContent = name;
+                }
+            } else {
+                whoisname.textContent = "游客";
+                showToast("请先登录");
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 1500);
+            }
+
+            whoisavatarDiv.addEventListener("click", () => {
+                if (nameArr.length > 1) {
+                    showToast("TripCode: " + nameArr[1]);
+                } else {
+                    showToast("没有TripCode");
+                }
+            });
+
+            dbackground.addEventListener("click", () => {
+                localStorage.removeItem("background");
+                showToast("已还原默认背景");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            });
+
+            if (navigator.userAgent.includes("iPhone") && !navigator.userAgent.includes("MicroMessenger")) {
+                document.body.style.height = "89vh";
+            }
+
+            if (backgroundUrl) {
+                document.body.style.backgroundImage = `url(${backgroundUrl})`;
+            }
+            background.addEventListener("click", () => {
+                const fileInput = createFileInput("image/*");
+                fileInput.onchange = () => handleFileUpload(fileInput.files[0], (url) => {
+                    localStorage.setItem("background", url);
+                    showToast("背景更新成功");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                });
+            });
+
+            const logout = document.getElementById("logout");
+            logout.addEventListener("click", () => {
+                localStorage.clear();
+                showToast("已退出登录");
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 1500);
+            });
+            if (avatar) {
+                whoisavatar.src = avatar;
+            }
+
+            if (name) {
+                if (nameArr.length > 1) {
+                    whoisname.textContent = nameArr[0];
+                } else {
+                    whoisname.textContent = name;
+                }
+            } else {
+                whoisname.textContent = "游客";
+                showToast("请先登录");
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 1500);
+            }
+
+            const handleFileUpload = (file, callback) => {
+                toggleLoading(content);
+                const formData = new FormData();
+                formData.append("file", file);
+                fetch("https://up1oad.eeuu.cc/", {
+                    method: "POST",
+                    body: formData
+                }).then(response => response.json()).then(data => {
+                    if (data.url) {
+                        callback(data.url);
+                    } else {
+                        showToast("上传失败");
+                    }
+                });
+            };
+            const createFileInput = accept => {
+                const fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = accept;
+                fileInput.click();
+                return fileInput;
+            };
+
+            function showToast(message) {
+                Toastify({
+                    text: message,
+                    duration: 1500,
+                    gravity: "top",
+                    position: "center",
+                    className: "toast_loaded",
+                    stopOnFocus: true,
+                    backgroundColor: "#fefefe50"
+                }).showToast();
+            }
+            const changeFavicon = (src) => {
+                let link = document.querySelector("link[rel='shortcut icon']") || document.createElement('link');
+                link.rel = 'shortcut icon';
+                link.type = 'image/x-icon';
+                link.href = src;
+                document.head.appendChild(link);
+            };
+
+            document.addEventListener("visibilitychange", () => {
+                const hiddenFavicon = '//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f4a4.svg';
+                const visibleFavicon = '//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f5ef.svg';
+                changeFavicon(document.visibilityState === 'hidden' ? hiddenFavicon : visibleFavicon);
+            });
+
+            changeFavicon('//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f4ad.svg');
+
+            function toggleLoading(el) {
+                el.classList.toggle('loading');
+            }
+
+        });
+    </script>
+</body>
+
+</html>

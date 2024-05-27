@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Room</title>
+    <link rel="stylesheet" href="css/spectre.min.css">
+    <link rel="stylesheet" href="css/spectre-icons.min.css">
+    <link rel="stylesheet" href="css/addons.css">
+    <link rel="stylesheet" href="/css/github-dark.min.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/marked.min.js" charset="utf-8" defer></script>
+    <script src="/js/highlight.min.js" charset="utf-8" defer></script>
+    <script src="/js/purify.min.js" charset="utf-8" defer></script>
+    <script src="/js/script.js" charset="utf-8" defer></script>
+
+    <style>
+        #whoisavatar {
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+    <main>
+
+        <div id="sidebar" style="display: none;">
+
+            <div id="room-list">
+                <template id="room">
+            <button class="room"></button>
+          </template>
+            </div>
+
+            <form id="new-room">
+                <input type="text" name="name" id="name" autocomplete="off" placeholder="new room..." maxlength="29"></input>
+                <button type="submit">+</button>
+            </form>
+        </div>
+
+        <div id="content">
+            <div id="status" class="pending"></div>
+            <div class="header">
+                <div id="RoomName"><i class="icon icon-location"></i>&nbsp;loading...</div>
+                <div class="Hmenu">
+                    <a class="btn input-group-btn btn-lg akaSb" style="width: auto;" href="/profile"><i class="icon icon-people"></i></a>
+                    <a class="btn input-group-btn btn-lg akaSb" href="/menu"><i class="icon icon-menu"></i></a>
+                </div>
+            </div>
+
+            <div id="messages">
+                <template id="message">
+                  <div class="message">
+                    <div class="start">
+                        <img class="avatar" alt="avatar">
+                    </div>
+                    <div class="center">
+                        <div class="start">
+                            <div class="badge" data-badge="UN"></div>
+                            <div class="timestamp"></div>
+                        </div> 
+                        <div class="text"></div>
+                    </div>
+                  </div>
+                </template>
+            </div>
+
+            <form id="new-message">
+                <div class="input-group">
+                    <div class="avatar" id="whoisavatarDiv">
+                        <img id="whoisavatar" src="/images/9b4815d6-bc7d-4bf9-aba3-18975efc89d1.avif" alt="avatar">
+                    </div>
+                    <div class="input-group-addon addon-lg" id="userholder">未登录</div>
+                    <textarea type="text" id="message" placeholder="Say something . . ."></textarea>
+                </div>
+                <button class="btn input-group-btn btn-lg" id="send"><i class="icon icon-plus"></i></button>
+            </form>
+        </div>
+
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sendButton = document.getElementById("send");
+            const messages = document.getElementById("messages");
+            const inputField = document.getElementById("message");
+
+            sendButton.addEventListener("mouseover", () => {
+                sendButton.innerHTML = "快发！";
+            });
+
+            sendButton.addEventListener("mouseout", () => {
+                sendButton.innerHTML = "<i class='icon icon-plus'></i>";
+            });
+
+            if (navigator.userAgent.includes("iPhone") && !navigator.userAgent.includes("MicroMessenger")) {
+                document.body.style.height = "89vh";
+            }
+
+            console.log(navigator.userAgent);
+
+            const observer = new MutationObserver(() => {
+                messages.scrollTop = messages.scrollHeight;
+            });
+
+            observer.observe(messages, {
+                childList: true
+            });
+
+            const changeFavicon = (src) => {
+                let link = document.querySelector("link[rel='shortcut icon']") || document.createElement('link');
+                link.rel = 'shortcut icon';
+                link.type = 'image/x-icon';
+                link.href = src;
+                document.head.appendChild(link);
+            };
+
+            document.addEventListener("visibilitychange", () => {
+                const hiddenFavicon = '//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f4a4.svg';
+                const visibleFavicon = '//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f5ef.svg';
+                changeFavicon(document.visibilityState === 'hidden' ? hiddenFavicon : visibleFavicon);
+            });
+
+            changeFavicon('//emojix.s3.ap-northeast-1.amazonaws.com/g3/svg/1f4ad.svg');
+            document.addEventListener('keydown', function(event) {
+                if (document.activeElement !== inputField) {
+                    inputField.focus();
+                }
+            });
+            document.addEventListener('dblclick', function(event) {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    document.documentElement.requestFullscreen();
+                }
+            });
+
+        });
+    </script>
+</body>
+
+</html>

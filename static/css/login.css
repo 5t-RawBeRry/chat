@@ -1,0 +1,72 @@
+:root {
+    --form-width: 400px;
+    --form-height: 400px;
+    --background-light: rgba(254, 254, 254, 0.54);
+    --background-dark: rgba(35, 35, 35, 0.79);
+    --blur-filter: blur(8px);
+    --border-radius: 8px;
+    --padding: 10px;
+    --input-color: #232323;
+    --toast-bg-light: rgba(254, 254, 254, 0.8);
+    --toast-bg-dark: rgba(35, 35, 35, 0.79);
+    --toast-color-dark: rgba(254, 254, 254, 0.79);
+    --avatar-size: 150px;
+    --momo-width: 300px;
+}
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: var(--form-width);
+    height: var(--form-height);
+    border-radius: var(--border-radius);
+    background-color: var(--background-light);
+    backdrop-filter: var(--blur-filter);
+    -webkit-backdrop-filter: var(--blur-filter);
+}
+
+#loginForm>* {
+    margin-top: 10px;
+}
+
+#loginForm>*>* {
+    border-radius: var(--border-radius);
+    background-color: var(--background-light);
+    border: 0;
+    color: var(--input-color);
+}
+
+.momo {
+    width: var(--momo-width);
+}
+
+.avatar img {
+    border-radius: 50% !important;
+    background-color: unset !important;
+}
+
+.avatar {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    background: none;
+}
+
+@media (max-width: 768px) {
+    #loginForm {
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    #loginForm {
+        background-color: var(--background-dark);
+    }
+    #loginForm>*>* {
+        background-color: var(--background-dark);
+        color: var(--toast-color-dark);
+    }
+}

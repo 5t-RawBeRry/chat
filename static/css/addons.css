@@ -1,0 +1,47 @@
+@font-face {
+    font-family: "fusion";
+    src: url(/fonts/fusion-pixel-10px-proportional-zh_hans.woff2);
+}
+
+@font-face {
+    font-family: "Neon";
+    src: url(/fonts/MonaspaceNeon-Regular.woff);
+}
+
+.avatar.loading img {
+    filter: blur(2px);
+}
+
+body {
+    font-family: 'fusion';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #232323c9;
+    background-image: url("/images/113113442_p0.avif");
+    background-size: cover;
+    background-position: center;
+}
+
+.toast_loaded {
+    padding: 10px 20px !important;
+    background-color: rgba(254, 254, 254, 0.8) !important;
+    color: #232323 !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border-radius: 20px !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .toast_loaded {
+        background-color: rgba(35, 35, 35, 0.79) !important;
+        color: rgba(254, 254, 254, 0.79) !important;
+    }
+}
+
+#whoisavatar:hover {
+    filter: brightness(0.5);
+    cursor: pointer;
+}
