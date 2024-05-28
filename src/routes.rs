@@ -5,7 +5,7 @@ pub fn static_files_routes() -> Vec<Route> {
     routes![
         login,
         menu,
-        gpg,
+        profile,
         script,
         background,
         avatar,
@@ -35,7 +35,7 @@ pub fn api_routes() -> Vec<Route> {
 static_response_handler! {
     "/login" => login => "login",
     "/menu" => menu => "menu",
-    "/profile" => gpg => "gpg",
+    "/profile" => profile => "profile",
     "/js/script.js" => script => "script",
     "/js/purify.min.js" => purify => "purify",
     "/js/marked.min.js" => marked => "marked",
