@@ -23,7 +23,7 @@ fn rocket() -> _ {
     let cache: Cache = Arc::new(Mutex::new(HashMap::new()));
     let figment = Figment::from(Config::default())
         .merge(("port", 65535))
-        .merge(("address", "::"))
+        .merge(("address", "127.0.0.1"))
         .merge(("log_level", "critical"))
         .merge(("secret_key", "1feb33f4-9e45-4491-903b-757b60163bb4"));
 
