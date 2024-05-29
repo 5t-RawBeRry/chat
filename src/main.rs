@@ -1,31 +1,44 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_include_static_resources;
 
-use rocket::config::Config;
+use rocket::config::Config as RocketConfig;
 use rocket::figment::Figment;
 use rocket::tokio::sync::broadcast::channel;
 use rocket::tokio::sync::Mutex;
 use std::collections::HashMap;
 use std::sync::Arc;
+use clap::Parser;
 
 mod routes;
 mod handlers;
 mod models;
 mod utils;
+mod config;
+mod cli;
 
 use routes::{static_files_routes, api_routes};
 use handlers::index;
 use models::Message;
 use utils::Cache;
+use config::Config;
+use cli::Args;
 
 #[launch]
 fn rocket() -> _ {
+    // Parse command-line arguments
+    let args = Args::parse();
+
     let cache: Cache = Arc::new(Mutex::new(HashMap::new()));
-    let figment = Figment::from(Config::default())
-        .merge(("port", 65535))
-        .merge(("address", "127.0.0.1"))
-        .merge(("log_level", "critical"))
-        .merge(("secret_key", "1feb33f4-9e45-4491-903b-757b60163bb4"));
+
+    // Read configuration from file
+    let config = Config::from_file(&args.config);
+
+    // Use configuration values with fallbacks
+    let figment = Figment::from(RocketConfig::default())
+        .merge(("port", config.port.unwrap_or(65535)))
+        .merge(("address", config.address.unwrap_or_else(|| "127.0.0.1".to_string())))
+        .merge(("log_level", config.log_level.unwrap_or_else(|| "critical".to_string())))
+        .merge(("secret_key", config.secret_key.unwrap_or_else(|| "1feb33f4-9e45-4491-903b-757b60163bb4".to_string())));
 
     rocket::custom(figment)
         .attach(static_resources_initializer!(
