@@ -34,6 +34,31 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-index-
+
+      - name: Cache target directory
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-${{ matrix.target }}-
+
       - name: Set up Cross
         if: matrix.cross == false
         uses: actions-rs/toolchain@v1
@@ -41,19 +66,23 @@ jobs:
           toolchain: nightly
           target: ${{ matrix.target }}
           override: true
+
       - name: Install OpenSSL
         if: matrix.os != 'windows-latest' && matrix.cross == false
         run: |
           sudo apt-get install -y libssl-dev musl-tools || brew install openssl
+
       - name: Build
         if: matrix.cross == false
         run: cargo build --release --target ${{ matrix.target }}
+
       - name: Build for Cross
         if: matrix.cross == true
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
           cargo install cross
           cross build --release --target ${{ matrix.target }}
+
       - name: Install UPX
         if: matrix.un-upx == false
         run: |
@@ -63,6 +92,7 @@ jobs:
             sudo apt-get install -y upx || brew install upx
           fi
         shell: bash
+
       - name: Compress Executables
         if: matrix.un-upx == false
         run: |
@@ -72,6 +102,7 @@ jobs:
             upx target/${{ matrix.target }}/release/chat
           fi
         shell: bash
+
       - name: Create Artifact Directory
         run: |
           mkdir chat
@@ -81,9 +112,9 @@ jobs:
             cp target/${{ matrix.target }}/release/chat chat/chat
           fi
         shell: bash
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: chat_${{ matrix.target }}_nightly
           path: chat/*
-
