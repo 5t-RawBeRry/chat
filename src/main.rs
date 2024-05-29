@@ -24,7 +24,7 @@ fn rocket() -> _ {
     let figment = Figment::from(Config::default())
         .merge(("port", 65535))
         .merge(("address", "::"))
-        .merge(("log_level", "debug"))
+        .merge(("log_level", "error"))
         .merge(("secret_key", "1feb33f4-9e45-4491-903b-757b60163bb4"));
 
     rocket::custom(figment)
